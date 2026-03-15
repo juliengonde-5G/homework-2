@@ -1,0 +1,123 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fredoka:wght@400;500;600;700&display=swap');
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    @apply font-sans text-gray-800 bg-gray-50;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white rounded-2xl shadow-sm border border-gray-100 p-6;
+  }
+
+  .card-hover {
+    @apply card transition-all duration-300 hover:shadow-md hover:-translate-y-1 cursor-pointer;
+  }
+
+  .btn-primary {
+    @apply bg-primary-600 text-white px-6 py-3 rounded-xl font-semibold
+           transition-all duration-200 hover:bg-primary-700 hover:shadow-lg
+           active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-100 text-gray-700 px-6 py-3 rounded-xl font-semibold
+           transition-all duration-200 hover:bg-gray-200
+           active:scale-95;
+  }
+
+  .btn-accent {
+    @apply bg-accent-green text-white px-6 py-3 rounded-xl font-semibold
+           transition-all duration-200 hover:brightness-110 hover:shadow-lg
+           active:scale-95;
+  }
+
+  .input-field {
+    @apply w-full px-4 py-3 rounded-xl border border-gray-200
+           focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent
+           transition-all duration-200;
+  }
+
+  .badge-pill {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
+  }
+
+  .timer-normal {
+    @apply text-primary-600 bg-primary-50 px-4 py-2 rounded-full font-mono font-bold;
+  }
+
+  .timer-warning {
+    @apply text-accent-orange bg-orange-50 px-4 py-2 rounded-full font-mono font-bold animate-pulse-soft;
+  }
+
+  .timer-overtime {
+    @apply text-accent-red bg-red-50 px-4 py-2 rounded-full font-mono font-bold;
+  }
+
+  /* Mascot */
+  .mascot {
+    @apply w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center text-2xl
+           shadow-sm border-2 border-primary-200;
+  }
+
+  /* Chat bubble */
+  .chat-user {
+    @apply bg-primary-600 text-white rounded-2xl rounded-br-md px-4 py-3 max-w-[80%] ml-auto;
+  }
+
+  .chat-assistant {
+    @apply bg-gray-100 text-gray-800 rounded-2xl rounded-bl-md px-4 py-3 max-w-[80%];
+  }
+}
+
+/* Dyslexia-friendly font (toggled via class) */
+.dyslexia-mode {
+  font-family: 'OpenDyslexic', 'Comic Sans MS', sans-serif !important;
+  letter-spacing: 0.05em;
+  word-spacing: 0.1em;
+  line-height: 1.8;
+}
+
+/* Theme variants - applied on profile */
+[data-theme="promoteur"] {
+  --color-accent: #EF4444;
+}
+[data-theme="rebelle"] {
+  --color-accent: #8B5CF6;
+}
+[data-theme="imagineur"] {
+  --color-accent: #EC4899;
+}
+[data-theme="analyseur"] {
+  --color-accent: #3B82F6;
+}
+[data-theme="empathique"] {
+  --color-accent: #10B981;
+}
+[data-theme="reveur"] {
+  --color-accent: #06B6D4;
+}

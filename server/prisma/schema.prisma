@@ -1,0 +1,352 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Multi-tenant: Famille ───────────────────────────────────────────
+
+model Family {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  users User[]
+
+  @@map("families")
+}
+
+// ─── Utilisateurs ────────────────────────────────────────────────────
+
+enum UserRole {
+  child
+  parent
+  admin
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  familyId     Int      @map("family_id")
+  name         String
+  avatar       String?
+  age          Int?
+  role         UserRole @default(child)
+  email        String?  @unique
+  passwordHash String?  @map("password_hash")
+  birthday     DateTime? @db.Date
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  family            Family             @relation(fields: [familyId], references: [id])
+  profile           Profile?
+  pathway           Pathway?
+  discoverySessions DiscoverySession[]
+  dailyPrograms     DailyProgram[]
+  generatedContent  GeneratedContent[]
+  sessionsLog       SessionLog[]
+  chatHistory       ChatMessage[]
+  userBadges        UserBadge[]
+  userStats         UserStats?
+  userProgress      UserProgress[]
+  skillAssessments  SkillAssessment[]
+  dailyMoods        DailyMood[]
+
+  @@index([familyId])
+  @@map("users")
+}
+
+// ─── Profil apprenant ────────────────────────────────────────────────
+
+enum PcmType {
+  promoteur
+  rebelle
+  imagineur
+  analyseur
+  empathique
+  reveur
+}
+
+model Profile {
+  id                  Int      @id @default(autoincrement())
+  userId              Int      @unique @map("user_id")
+  profileType         PcmType? @map("profile_type")
+  learningModalities  Json?    @map("learning_modalities") // {lecture: 0-5, oral: 0-5, image: 0-5, kinesthesique: 0-5}
+  interests           Json?    // ["robotique", "géopolitique", ...]
+  careerOrientation   Json?    @map("career_orientation") // {aspirations, secteurs, ...}
+  isDyslexic          Boolean  @default(false) @map("is_dyslexic")
+  theme               String?  // palette graphique
+  dailyLimitMinutes   Int      @default(45) @map("daily_limit_minutes")
+  adviceTips          Json?    @map("advice_tips") // Module "Mes conseils"
+  discoveryCompleted  Boolean  @default(false) @map("discovery_completed")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  user    User             @relation(fields: [userId], references: [id])
+  history ProfileHistory[]
+
+  @@map("profiles")
+}
+
+model ProfileHistory {
+  id        Int      @id @default(autoincrement())
+  profileId Int      @map("profile_id")
+  changedBy Int      @map("changed_by")
+  changes   Json     // Diff des modifications
+  reason    String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  profile Profile @relation(fields: [profileId], references: [id])
+
+  @@map("profile_history")
+}
+
+// ─── Parcours ────────────────────────────────────────────────────────
+
+enum PathwayType {
+  back_to_basics
+  oriented
+  project
+}
+
+enum PathwayStatus {
+  draft
+  active
+  completed
+  paused
+}
+
+model Pathway {
+  id             Int           @id @default(autoincrement())
+  userId         Int           @unique @map("user_id")
+  type           PathwayType
+  targetSubjects Json?         @map("target_subjects") // Pour oriented: ["histoire", "physique"]
+  projectTheme   String?       @map("project_theme") // Pour project: "robotique et IA"
+  careerFocus    Json?         @map("career_focus") // Matières liées au métier
+  status         PathwayStatus @default(draft)
+  createdAt      DateTime      @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("pathways")
+}
+
+// ─── Référentiel compétences ─────────────────────────────────────────
+
+model Competency {
+  id        Int    @id @default(autoincrement())
+  subject   String // "francais", "mathematiques", "anglais", "geopolitique"...
+  skillCode String @map("skill_code") // Code socle commun ou custom
+  label     String
+  level     String // "cycle3", "cycle4", "lycee", "ouverture"
+  category  String? // Sous-catégorie
+
+  generatedContent GeneratedContent[]
+  skillAssessments SkillAssessment[]
+
+  @@unique([subject, skillCode])
+  @@map("competencies")
+}
+
+// ─── Référentiel métiers ─────────────────────────────────────────────
+
+model CareerReference {
+  id        Int    @id @default(autoincrement())
+  sector    String // "santé", "tech", "arts"
+  jobFamily String @map("job_family")
+  label     String
+
+  @@map("career_references")
+}
+
+// ─── Phase de découverte ─────────────────────────────────────────────
+
+model DiscoverySession {
+  id          Int       @id @default(autoincrement())
+  userId      Int       @map("user_id")
+  stepNumber  Int       @map("step_number") // 1-5
+  stepType    String    @map("step_type") // "interests", "learning", "pcm", "pathway_choice", "career"
+  responses   Json      // Réponses brutes
+  completedAt DateTime? @map("completed_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, stepNumber])
+  @@map("discovery_sessions")
+}
+
+// ─── Programme du jour ───────────────────────────────────────────────
+
+model DailyProgram {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  date      DateTime @db.Date
+  blocks    Json     // [{type: "lesson"|"exercise", subject, competencyId, title, duration, completed}]
+  moodCheck Json?    @map("mood_check") // Réponses humeur du jour
+  status    String   @default("pending") // pending, in_progress, completed
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, date])
+  @@map("daily_programs")
+}
+
+// ─── Contenu généré (cache) ──────────────────────────────────────────
+
+model GeneratedContent {
+  id           Int      @id @default(autoincrement())
+  userId       Int      @map("user_id")
+  subject      String
+  competencyId Int?     @map("competency_id")
+  contentType  String   @map("content_type") // "lesson" | "exercise"
+  content      Json     // Contenu structuré
+  language     String   @default("fr")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  user       User        @relation(fields: [userId], references: [id])
+  competency Competency? @relation(fields: [competencyId], references: [id])
+
+  @@map("generated_content")
+}
+
+// ─── Logs de session ─────────────────────────────────────────────────
+
+model SessionLog {
+  id              Int       @id @default(autoincrement())
+  userId          Int       @map("user_id")
+  startedAt       DateTime  @default(now()) @map("started_at")
+  endedAt         DateTime? @map("ended_at")
+  durationMinutes Int?      @map("duration_minutes")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("sessions_log")
+}
+
+// ─── Chat ────────────────────────────────────────────────────────────
+
+model ChatMessage {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  role      String   // "user" | "assistant"
+  content   String
+  context   String?  // Contexte de la conversation (matière, leçon en cours)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
+  @@map("chat_history")
+}
+
+// ─── Gamification ────────────────────────────────────────────────────
+
+model Badge {
+  id          Int    @id @default(autoincrement())
+  code        String @unique
+  name        String
+  description String
+  icon        String
+  category    String // "streak", "mastery", "exploration", "social"
+  threshold   Int    // Seuil pour obtenir le badge
+
+  userBadges UserBadge[]
+
+  @@map("badges")
+}
+
+model UserBadge {
+  id       Int      @id @default(autoincrement())
+  userId   Int      @map("user_id")
+  badgeId  Int      @map("badge_id")
+  earnedAt DateTime @default(now()) @map("earned_at")
+
+  user  User  @relation(fields: [userId], references: [id])
+  badge Badge @relation(fields: [badgeId], references: [id])
+
+  @@unique([userId, badgeId])
+  @@map("user_badges")
+}
+
+model UserStats {
+  id             Int      @id @default(autoincrement())
+  userId         Int      @unique @map("user_id")
+  totalMinutes   Int      @default(0) @map("total_minutes")
+  totalSessions  Int      @default(0) @map("total_sessions")
+  currentStreak  Int      @default(0) @map("current_streak")
+  longestStreak  Int      @default(0) @map("longest_streak")
+  level          Int      @default(1)
+  xp             Int      @default(0)
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("user_stats")
+}
+
+model UserProgress {
+  id           Int      @id @default(autoincrement())
+  userId       Int      @map("user_id")
+  subject      String
+  competencyId Int?     @map("competency_id")
+  score        Float    @default(0) // 0-100
+  attempts     Int      @default(0)
+  lastAt       DateTime @default(now()) @map("last_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, subject, competencyId])
+  @@map("user_progress")
+}
+
+model SkillAssessment {
+  id           Int      @id @default(autoincrement())
+  userId       Int      @map("user_id")
+  competencyId Int      @map("competency_id")
+  score        Float    // 0-100
+  answers      Json     // Réponses détaillées
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  user       User       @relation(fields: [userId], references: [id])
+  competency Competency @relation(fields: [competencyId], references: [id])
+
+  @@map("skill_assessments")
+}
+
+// ─── Humeur et accueil ───────────────────────────────────────────────
+
+model DailyMood {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  date      DateTime @db.Date
+  mood      String   // "super", "bien", "bof", "pas_top"
+  note      String?  // Texte libre
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, date])
+  @@map("daily_moods")
+}
+
+model DailyTip {
+  id       Int    @id @default(autoincrement())
+  category String // "encouragement", "blague", "culture"
+  content  String
+  ageMin   Int?   @map("age_min")
+  ageMax   Int?   @map("age_max")
+
+  @@map("daily_tips")
+}
+
+model Event {
+  id       Int      @id @default(autoincrement())
+  date     DateTime @db.Date
+  title    String
+  category String   // "anniversaire_celebre", "histoire", "science", "culture"
+
+  @@map("events")
+}
