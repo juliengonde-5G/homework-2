@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 export default function SelectChild() {
   const [children, setChildren] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showAddChild, setShowAddChild] = useState(false);
   const [newChild, setNewChild] = useState({ name: '', age: '', avatar: '🧑‍🎓', birthday: '' });
   const { user, selectChild, logout } = useAuth();
@@ -26,10 +27,12 @@ export default function SelectChild() {
 
   const loadChildren = async () => {
     try {
+      setError(null);
       const res = await familyAPI.getUsers();
       setChildren(res.data);
     } catch (err) {
       console.error(err);
+      setError('Impossible de charger les profils. Vérifie ta connexion.');
     } finally {
       setLoading(false);
     }
@@ -68,6 +71,17 @@ export default function SelectChild() {
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="mascot text-4xl w-20 h-20 animate-bounce-slow">🦉</div>
+    </div>
+  );
+
+  if (error) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center py-8">
+        <p className="text-red-500 mb-2">{error}</p>
+        <button type="button" onClick={() => { setError(null); loadChildren(); }} className="btn-secondary text-sm">
+          Réessayer
+        </button>
+      </div>
     </div>
   );
 

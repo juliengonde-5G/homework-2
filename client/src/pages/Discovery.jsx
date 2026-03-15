@@ -10,6 +10,7 @@ export default function Discovery() {
   const [currentStepData, setCurrentStepData] = useState(null);
   const [responses, setResponses] = useState({});
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const [result, setResult] = useState(null);
@@ -20,6 +21,7 @@ export default function Discovery() {
 
   const loadStatus = async () => {
     try {
+      setError(null);
       const res = await discoveryAPI.getStatus(userId);
       setStatus(res.data);
 
@@ -33,6 +35,7 @@ export default function Discovery() {
       }
     } catch (err) {
       console.error(err);
+      setError('Erreur lors du chargement de l\'étape. Réessaye.');
     } finally {
       setLoading(false);
     }
@@ -66,6 +69,17 @@ export default function Discovery() {
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="mascot text-4xl w-20 h-20 animate-bounce-slow">🦉</div>
+    </div>
+  );
+
+  if (error) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center py-8">
+        <p className="text-red-500 mb-2">{error}</p>
+        <button type="button" onClick={() => { setError(null); loadStatus(); }} className="btn-secondary text-sm">
+          Réessayer
+        </button>
+      </div>
     </div>
   );
 

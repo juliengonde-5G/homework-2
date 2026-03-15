@@ -168,6 +168,17 @@ export default function Session() {
     </div>
   );
 
+  if (error && !program) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center py-8">
+        <p className="text-red-500 mb-2">{error}</p>
+        <button type="button" onClick={() => { setError(null); loadProgram(); }} className="btn-secondary text-sm">
+          Réessayer
+        </button>
+      </div>
+    </div>
+  );
+
   const timerClass = timer.status === 'overtime' ? 'timer-overtime' :
                      timer.status === 'warning' ? 'timer-warning' : 'timer-normal';
 
@@ -253,8 +264,19 @@ export default function Session() {
         ) : currentBlock ? (
           <div className="flex items-center justify-center py-20">
             <div className="text-center">
-              <div className="animate-spin text-4xl mb-4">⚡</div>
-              <p className="text-gray-500">{generating ? 'Génération du contenu en cours...' : 'Chargement...'}</p>
+              {error ? (
+                <>
+                  <p className="text-red-500 mb-2">{error}</p>
+                  <button type="button" onClick={() => { setError(null); selectBlock(currentBlock); }} className="btn-secondary text-sm">
+                    Réessayer
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div className="animate-spin text-4xl mb-4">⚡</div>
+                  <p className="text-gray-500">{generating ? 'Génération du contenu en cours...' : 'Chargement...'}</p>
+                </>
+              )}
             </div>
           </div>
         ) : (
