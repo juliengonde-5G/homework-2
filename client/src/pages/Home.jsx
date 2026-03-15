@@ -17,12 +17,14 @@ export default function Home() {
   const [program, setProgram] = useState(null);
   const [mood, setMood] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     loadData();
   }, [userId]);
 
   const loadData = async () => {
+    setError(null);
     try {
       const [feedRes, programRes] = await Promise.all([
         homeAPI.getFeed(userId),
@@ -32,6 +34,7 @@ export default function Home() {
       if (programRes) setProgram(programRes.data);
     } catch (err) {
       console.error(err);
+      setError('Impossible de charger les données. Vérifie ta connexion.');
     } finally {
       setLoading(false);
     }
@@ -49,6 +52,19 @@ export default function Home() {
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="mascot text-4xl w-20 h-20 animate-bounce-slow">🦉</div>
+    </div>
+  );
+
+  if (error) return (
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="card text-center max-w-md">
+        <div className="text-5xl mb-4">😕</div>
+        <h2 className="font-display text-xl font-bold text-gray-800 mb-2">Oups !</h2>
+        <p className="text-gray-500 mb-4">{error}</p>
+        <button type="button" onClick={() => { setLoading(true); loadData(); }} className="btn-primary">
+          Réessayer
+        </button>
+      </div>
     </div>
   );
 

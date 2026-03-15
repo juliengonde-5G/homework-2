@@ -79,7 +79,7 @@ export default function Discovery() {
       <div className="card text-center max-w-md">
         <div className="text-5xl mb-4">🎉</div>
         <h2 className="font-display text-xl font-bold mb-2">Phase de découverte terminée !</h2>
-        <button onClick={() => navigate(`/home/${userId}`)} className="btn-primary mt-4">
+        <button type="button" onClick={() => navigate(`/home/${userId}`)} className="btn-primary mt-4">
           Commencer mon parcours
         </button>
       </div>
@@ -92,7 +92,7 @@ export default function Discovery() {
       <div className="bg-white/80 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-10 px-4 py-3">
         <div className="max-w-lg mx-auto">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm text-gray-500">Phase de découverte</span>
+            <h1 className="font-display text-lg font-bold text-primary-800">Phase de découverte</h1>
             <span className="text-sm font-medium text-primary-600">
               Étape {status.currentStep.stepNumber}/{status.totalSteps}
             </span>
@@ -184,6 +184,7 @@ function MultiSelectStep({ content, responses, setResponses }) {
         {content.categories.map(cat => (
           <motion.button
             key={cat.id}
+            type="button"
             whileTap={{ scale: 0.95 }}
             onClick={() => toggle(cat.id)}
             className={`p-4 rounded-2xl text-center transition-all border-2 ${
@@ -228,6 +229,7 @@ function RatingStep({ content, responses, setResponses, age }) {
               {Array.from({ length: content.scale.max }, (_, i) => i + 1).map(val => (
                 <button
                   key={val}
+                  type="button"
                   onClick={() => setRating(scenario.id, val)}
                   className={`w-12 h-12 rounded-xl font-bold transition-all ${
                     ratings[scenario.id] === val
@@ -272,6 +274,7 @@ function PcmQuizStep({ content, responses, setResponses }) {
               {q.options.map(opt => (
                 <button
                   key={opt.value}
+                  type="button"
                   onClick={() => setAnswer(q.id, opt.value)}
                   className={`w-full text-left px-4 py-3 rounded-xl transition-all ${
                     answers[q.id] === opt.value
@@ -310,6 +313,7 @@ function PathwaySelectStep({ content, responses, setResponses }) {
         {content.pathways.map(p => (
           <motion.div key={p.id} whileTap={{ scale: 0.98 }}>
             <button
+              type="button"
               onClick={() => selectPathway(p.id)}
               className={`w-full text-left card transition-all ${
                 responses.pathwayType === p.id
@@ -341,6 +345,7 @@ function PathwaySelectStep({ content, responses, setResponses }) {
                     {p.inputOptions.map(opt => (
                       <button
                         key={opt}
+                        type="button"
                         onClick={() => {
                           const newSel = selectedSubjects.includes(opt)
                             ? selectedSubjects.filter(s => s !== opt)
@@ -404,6 +409,7 @@ function CareerExplorerStep({ content, responses, setResponses }) {
         {content.sectors.map(sector => (
           <motion.button
             key={sector.id}
+            type="button"
             whileTap={{ scale: 0.95 }}
             onClick={() => toggle(sector.id)}
             className={`p-4 rounded-2xl text-center transition-all border-2 ${
@@ -522,7 +528,7 @@ function DiscoveryResult({ result, userId, navigate }) {
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
           className="text-center pb-8">
-          <button onClick={() => navigate(`/home/${userId}`)} className="btn-primary text-lg px-10 py-4">
+          <button type="button" onClick={() => navigate(`/home/${userId}`)} className="btn-primary text-lg px-10 py-4">
             Commencer mon parcours ! 🚀
           </button>
         </motion.div>

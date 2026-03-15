@@ -37,7 +37,9 @@ model User {
   email        String?  @unique
   passwordHash String?  @map("password_hash")
   birthday     DateTime? @db.Date
-  createdAt    DateTime @default(now()) @map("created_at")
+  deletedAt      DateTime? @map("deleted_at")
+  consentGivenAt DateTime? @map("consent_given_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
 
   family            Family             @relation(fields: [familyId], references: [id])
   profile           Profile?
@@ -52,6 +54,8 @@ model User {
   userProgress      UserProgress[]
   skillAssessments  SkillAssessment[]
   dailyMoods        DailyMood[]
+  userConsents      UserConsent[]
+  auditLogs         AuditLog[]
 
   @@index([familyId])
   @@map("users")
@@ -64,6 +68,7 @@ enum PcmType {
   rebelle
   imagineur
   analyseur
+  perseverant
   empathique
   reveur
 }
@@ -349,4 +354,48 @@ model Event {
   category String   // "anniversaire_celebre", "histoire", "science", "culture"
 
   @@map("events")
+}
+
+// ─── RGPD : Consentement ────────────────────────────────────────────
+
+model Consent {
+  id          Int      @id @default(autoincrement())
+  consentType String   @map("consent_type") // "terms", "data_processing", "marketing"
+  version     String   // "1.0", "1.1", etc.
+  givenBy     String   @map("given_by") // "user", "parent"
+  givenAt     DateTime @default(now()) @map("given_at")
+
+  userConsents UserConsent[]
+
+  @@map("consents")
+}
+
+model UserConsent {
+  id          Int       @id @default(autoincrement())
+  userId      Int       @map("user_id")
+  consentId   Int       @map("consent_id")
+  givenAt     DateTime  @default(now()) @map("given_at")
+  withdrawn   Boolean   @default(false)
+  withdrawnAt DateTime? @map("withdrawn_at")
+
+  user    User    @relation(fields: [userId], references: [id])
+  consent Consent @relation(fields: [consentId], references: [id])
+
+  @@unique([userId, consentId])
+  @@map("user_consents")
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  action    String   // "CONSENT_GIVEN", "ERASURE_REQUESTED", "DATA_EXPORT", etc.
+  entity    String   // "User", "UserConsent", etc.
+  entityId  Int      @map("entity_id")
+  details   Json?    // Additional context
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, action])
+  @@map("audit_logs")
 }

@@ -5,6 +5,18 @@ const prisma = require('../utils/prisma');
 
 const router = express.Router();
 
+// ─── Validation helpers ─────────────────────────────────────────────
+const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+function validateEmail(email) {
+  return EMAIL_REGEX.test(email);
+}
+
+function validatePassword(password) {
+  if (password.length < 8) return false;
+  return true;
+}
+
 // POST /api/auth/parent/register - Inscription parent + famille
 router.post('/parent/register', async (req, res) => {
   try {
@@ -14,12 +26,20 @@ router.post('/parent/register', async (req, res) => {
       return res.status(400).json({ error: 'Tous les champs sont requis' });
     }
 
+    if (!validateEmail(email)) {
+      return res.status(400).json({ error: 'Format d\'email invalide' });
+    }
+
+    if (!validatePassword(password)) {
+      return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 8 caractères' });
+    }
+
     const existing = await prisma.user.findUnique({ where: { email } });
     if (existing) {
       return res.status(409).json({ error: 'Email déjà utilisé' });
     }
 
-    const passwordHash = await bcrypt.hash(password, 12);
+    const passwordHash = await bcrypt.hash(password, 14);
 
     const result = await prisma.$transaction(async (tx) => {
       const family = await tx.family.create({
@@ -42,7 +62,7 @@ router.post('/parent/register', async (req, res) => {
     const token = jwt.sign(
       { userId: result.user.id, familyId: result.family.id, role: 'parent' },
       process.env.JWT_SECRET,
-      { expiresIn: '7d' }
+      { expiresIn: '24h' }
     );
 
     res.status(201).json({
@@ -61,6 +81,14 @@ router.post('/parent/login', async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email et mot de passe requis' });
+    }
+
+    if (!validateEmail(email)) {
+      return res.status(400).json({ error: 'Format d\'email invalide' });
+    }
+
     const user = await prisma.user.findUnique({
       where: { email },
       include: { family: true }
@@ -78,7 +106,7 @@ router.post('/parent/login', async (req, res) => {
     const token = jwt.sign(
       { userId: user.id, familyId: user.familyId, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: '7d' }
+      { expiresIn: '24h' }
     );
 
     res.json({
@@ -114,7 +142,7 @@ router.post('/child/select', async (req, res) => {
     const childToken = jwt.sign(
       { userId: child.id, familyId: decoded.familyId, role: 'child', parentId: decoded.userId },
       process.env.JWT_SECRET,
-      { expiresIn: '24h' }
+      { expiresIn: '4h' }
     );
 
     res.json({

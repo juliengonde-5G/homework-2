@@ -19,6 +19,7 @@ export default function Session() {
   const [chatMessages, setChatMessages] = useState([]);
   const [chatInput, setChatInput] = useState('');
   const [sendingChat, setSendingChat] = useState(false);
+  const [generating, setGenerating] = useState(false);
 
   // Exercise state
   const [answers, setAnswers] = useState({});
@@ -28,6 +29,14 @@ export default function Session() {
   useEffect(() => {
     loadProgram();
   }, [userId]);
+
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape' && showChat) setShowChat(false);
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [showChat]);
 
   const loadProgram = async () => {
     try {
@@ -52,6 +61,7 @@ export default function Session() {
     setScore(null);
 
     try {
+      setGenerating(true);
       if (block.type === 'lesson') {
         const res = await contentAPI.generateLesson({
           userId: parseInt(userId),
@@ -69,6 +79,8 @@ export default function Session() {
       }
     } catch (err) {
       console.error(err);
+    } finally {
+      setGenerating(false);
     }
   };
 
@@ -156,12 +168,14 @@ export default function Session() {
           </button>
 
           <div className={timerClass}>
-            ⏱ {timer.status === 'overtime' ? `+${timer.display}` : timer.remainingDisplay}
+            {timer.status === 'overtime' ? `Temps dépassé: +${timer.display}` : `Temps restant: ${timer.remainingDisplay}`}
           </div>
 
           <button
             onClick={() => setShowChat(!showChat)}
             className="relative p-2 rounded-full hover:bg-gray-100"
+            aria-label="Ouvrir l'assistant"
+            type="button"
           >
             <span className="text-xl">🦉</span>
             {showChat && <span className="absolute -top-1 -right-1 w-3 h-3 bg-primary-500 rounded-full" />}
@@ -227,7 +241,7 @@ export default function Session() {
           <div className="flex items-center justify-center py-20">
             <div className="text-center">
               <div className="animate-spin text-4xl mb-4">⚡</div>
-              <p className="text-gray-500">Génération du contenu...</p>
+              <p className="text-gray-500">{generating ? 'Génération du contenu en cours...' : 'Chargement...'}</p>
             </div>
           </div>
         ) : (
@@ -256,7 +270,7 @@ export default function Session() {
                 <span className="mascot text-sm w-8 h-8">🦉</span>
                 <span className="font-display font-semibold">Assistant</span>
               </div>
-              <button onClick={() => setShowChat(false)} className="text-gray-400 hover:text-gray-600">✕</button>
+              <button onClick={() => setShowChat(false)} className="text-gray-400 hover:text-gray-600" aria-label="Fermer l'assistant" type="button">✕</button>
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
@@ -315,6 +329,8 @@ function LessonView({ content, tts }) {
           className={`p-3 rounded-full transition-all ${
             tts.isPlaying ? 'bg-primary-100 text-primary-600 animate-pulse' : 'bg-gray-100 hover:bg-gray-200'
           }`}
+          aria-label="Lire à voix haute"
+          type="button"
         >
           {tts.isPlaying ? '⏸' : '🔊'}
         </button>
@@ -333,6 +349,8 @@ function LessonView({ content, tts }) {
             <button
               onClick={() => tts.speak(section.content, content.language || 'fr')}
               className="text-sm text-gray-400 hover:text-primary-500"
+              aria-label="Lire à voix haute"
+              type="button"
             >
               🔊
             </button>

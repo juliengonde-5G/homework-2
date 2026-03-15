@@ -16,6 +16,14 @@ export default function SelectChild() {
     loadChildren();
   }, []);
 
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape' && showAddChild) setShowAddChild(false);
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [showAddChild]);
+
   const loadChildren = async () => {
     try {
       const res = await familyAPI.getUsers();
@@ -75,10 +83,10 @@ export default function SelectChild() {
             <p className="text-gray-500 text-sm mt-1">Choisis ton profil pour commencer</p>
           </div>
           <div className="flex gap-2">
-            <button onClick={() => navigate('/admin')} className="btn-secondary text-sm">
+            <button type="button" onClick={() => navigate('/admin')} className="btn-secondary text-sm">
               Espace parent
             </button>
-            <button onClick={logout} className="text-gray-400 hover:text-gray-600 text-sm">
+            <button type="button" onClick={logout} className="text-gray-400 hover:text-gray-600 text-sm">
               Déconnexion
             </button>
           </div>
@@ -128,6 +136,7 @@ export default function SelectChild() {
             transition={{ delay: children.length * 0.1 }}
           >
             <button
+              type="button"
               onClick={() => setShowAddChild(true)}
               className="card-hover w-full text-center border-2 border-dashed border-gray-300 hover:border-primary-400"
             >
@@ -178,7 +187,7 @@ export default function SelectChild() {
                     {avatars.map(a => (
                       <button key={a} type="button"
                         onClick={() => setNewChild({...newChild, avatar: a})}
-                        className={`text-3xl p-2 rounded-xl transition-all ${
+                        className={`text-3xl p-3 rounded-xl transition-all ${
                           newChild.avatar === a ? 'bg-primary-100 ring-2 ring-primary-400 scale-110' : 'hover:bg-gray-100'
                         }`}
                       >{a}</button>

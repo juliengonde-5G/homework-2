@@ -39,30 +39,30 @@ export default function Register() {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Votre prénom</label>
-            <input type="text" value={form.name} onChange={e => setForm({...form, name: e.target.value})}
+            <label htmlFor="register-name" className="block text-sm font-medium text-gray-600 mb-1">Votre prénom</label>
+            <input id="register-name" type="text" value={form.name} onChange={e => setForm({...form, name: e.target.value})}
               className="input-field" required />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Nom de famille</label>
-            <input type="text" value={form.familyName} onChange={e => setForm({...form, familyName: e.target.value})}
+            <label htmlFor="register-family" className="block text-sm font-medium text-gray-600 mb-1">Nom de famille</label>
+            <input id="register-family" type="text" value={form.familyName} onChange={e => setForm({...form, familyName: e.target.value})}
               className="input-field" placeholder="Ex: Famille Dupont" required />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Email</label>
-            <input type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})}
+            <label htmlFor="register-email" className="block text-sm font-medium text-gray-600 mb-1">Email</label>
+            <input id="register-email" type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})}
               className="input-field" required />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">Mot de passe</label>
-            <input type="password" value={form.password} onChange={e => setForm({...form, password: e.target.value})}
+            <label htmlFor="register-password" className="block text-sm font-medium text-gray-600 mb-1">Mot de passe</label>
+            <input id="register-password" type="password" value={form.password} onChange={e => setForm({...form, password: e.target.value})}
               className="input-field" minLength={6} required />
           </div>
 
-          <button type="submit" disabled={loading} className="btn-primary w-full">
+          <button type="submit" disabled={loading} className="btn-primary w-full" aria-label="Créer mon espace">
             {loading ? 'Création...' : 'Créer mon espace'}
           </button>
 

@@ -7,7 +7,7 @@ services:
     environment:
       POSTGRES_DB: homework_db
       POSTGRES_USER: homework
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-homework_secure_2024}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
     volumes:
       - pgdata:/var/lib/postgresql/data
     ports:
@@ -24,8 +24,8 @@ services:
     ports:
       - "${PORT:-3001}:3001"
     environment:
-      DATABASE_URL: postgresql://homework:${DB_PASSWORD:-homework_secure_2024}@db:5432/homework_db?schema=public
-      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      DATABASE_URL: postgresql://homework:${DB_PASSWORD:?DB_PASSWORD is required}@db:5432/homework_db?schema=public
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY}
       NODE_ENV: production
       PORT: 3001

@@ -10,6 +10,7 @@ const pcmLabels = {
   analyseur: { label: 'Analyseur', emoji: '🔬', color: 'bg-blue-100 text-blue-700', desc: 'Logique, précision, structure' },
   empathique: { label: 'Empathique', emoji: '💚', color: 'bg-green-100 text-green-700', desc: 'Relations, bienveillance, harmonie' },
   reveur: { label: 'Rêveur', emoji: '☁️', color: 'bg-cyan-100 text-cyan-700', desc: 'Calme, introspection, imagination' },
+  perseverant: { label: 'Persévérant', emoji: '💪', color: 'bg-amber-100 text-amber-700', desc: 'Engagement, constance, rigueur' },
 };
 
 export default function Profile() {
@@ -18,10 +19,20 @@ export default function Profile() {
   const [user, setUser] = useState(null);
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [dyslexiaMode, setDyslexiaMode] = useState(() => localStorage.getItem('dyslexiaMode') === 'true');
 
   useEffect(() => {
     loadProfile();
   }, [userId]);
+
+  useEffect(() => {
+    if (dyslexiaMode) {
+      document.body.classList.add('dyslexia-mode');
+    } else {
+      document.body.classList.remove('dyslexia-mode');
+    }
+    localStorage.setItem('dyslexiaMode', dyslexiaMode);
+  }, [dyslexiaMode]);
 
   const loadProfile = async () => {
     try {
@@ -158,6 +169,24 @@ export default function Profile() {
             )}
           </motion.div>
         )}
+
+        {/* Dyslexia mode toggle */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }} className="card">
+          <h3 className="font-display font-semibold mb-3">Accessibilité</h3>
+          <button
+            type="button"
+            onClick={() => setDyslexiaMode(!dyslexiaMode)}
+            className={`dyslexia-toggle w-full ${dyslexiaMode ? 'active' : ''}`}
+          >
+            <div>
+              <p className="font-medium text-sm">Mode dyslexie</p>
+              <p className="text-xs text-gray-400">Police et espacement adaptés</p>
+            </div>
+            <div className={`w-12 h-7 rounded-full transition-all duration-200 flex items-center ${dyslexiaMode ? 'bg-primary-500 justify-end' : 'bg-gray-300 justify-start'}`}>
+              <div className="w-5 h-5 bg-white rounded-full shadow mx-1" />
+            </div>
+          </button>
+        </motion.div>
 
         {/* Tips */}
         {tips.tips && (

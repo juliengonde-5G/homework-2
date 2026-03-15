@@ -37,14 +37,13 @@ function getDiscoverySteps(age) {
       title: 'Ton parcours',
       description: 'Choisis le type de parcours qui te convient.'
     },
-    {
+    // Career step only for 13+ (pedagogy: orientation inappropriée avant 13 ans)
+    ...(age >= 13 ? [{
       stepNumber: 5,
       stepType: 'career',
-      title: age <= 13 ? 'Quand tu seras grand(e)...' : 'Orientation et métiers',
-      description: age <= 13
-        ? 'Qu\'est-ce que tu aimerais faire plus tard ?'
-        : 'Découvre des métiers et oriente ton parcours.'
-    }
+      title: 'Orientation et métiers',
+      description: 'Découvre des secteurs professionnels et oriente ton parcours.'
+    }] : [])
   ];
 }
 
@@ -354,7 +353,7 @@ function getLearningContent(age) {
     instruction: age <= 10
       ? 'Pour chaque façon d\'apprendre, dis-nous si tu aimes beaucoup, un peu, ou pas trop !'
       : 'Note chaque modalité d\'apprentissage de 1 (pas du tout) à 5 (beaucoup)',
-    scale: age <= 10 ? { min: 1, max: 3, labels: ['Pas trop', 'Un peu', 'Beaucoup'] } : { min: 1, max: 5, labels: ['1', '2', '3', '4', '5'] },
+    scale: age <= 10 ? { min: 1, max: 3, labels: ['Pas trop', 'Un peu', 'Beaucoup'] } : { min: 1, max: 5, labels: ['Pas du tout', 'Un peu', 'Moyennement', 'Beaucoup', 'Tout à fait'] },
     scenarios
   };
 }
@@ -371,7 +370,8 @@ function getPcmContent(age) {
         { value: 'empathique', label: 'En parler avec quelqu\'un que tu aimes' },
         { value: 'rebelle', label: 'Inventer une solution rigolote et originale' },
         { value: 'imagineur', label: 'Imaginer plein de solutions dans ta tête' },
-        { value: 'reveur', label: 'Attendre un peu et y penser tranquillement' }
+        { value: 'reveur', label: 'Attendre un peu et y penser tranquillement' },
+        { value: 'perseverant', label: 'Ne pas lâcher jusqu\'à trouver la bonne réponse' }
       ]
     },
     {
@@ -383,7 +383,8 @@ function getPcmContent(age) {
         { value: 'empathique', label: 'Faire plaisir à quelqu\'un' },
         { value: 'rebelle', label: 'Faire quelque chose de nouveau et surprenant' },
         { value: 'imagineur', label: 'Créer ou inventer quelque chose' },
-        { value: 'reveur', label: 'Avoir du temps pour toi, au calme' }
+        { value: 'reveur', label: 'Avoir du temps pour toi, au calme' },
+        { value: 'perseverant', label: 'Finir ce que tu as commencé, même si c\'est dur' }
       ]
     },
     {
@@ -395,7 +396,8 @@ function getPcmContent(age) {
         { value: 'empathique', label: 'Le prof est gentil et encourage tout le monde' },
         { value: 'rebelle', label: 'On fait des activités amusantes et variées' },
         { value: 'imagineur', label: 'On peut dessiner, imaginer, créer' },
-        { value: 'reveur', label: 'On peut travailler seul à son rythme' }
+        { value: 'reveur', label: 'On peut travailler seul à son rythme' },
+        { value: 'perseverant', label: 'On doit bien faire les choses et finir son travail' }
       ]
     },
     {
@@ -407,7 +409,8 @@ function getPcmContent(age) {
         { value: 'empathique', label: 'Tu t\'assures que tout le monde va bien' },
         { value: 'rebelle', label: 'Tu proposes des idées folles et amusantes' },
         { value: 'imagineur', label: 'Tu as plein d\'idées créatives' },
-        { value: 'reveur', label: 'Tu préfères faire ta partie tout seul' }
+        { value: 'reveur', label: 'Tu préfères faire ta partie tout seul' },
+        { value: 'perseverant', label: 'Tu vérifies que tout est bien fait' }
       ]
     },
     {
@@ -419,7 +422,8 @@ function getPcmContent(age) {
         { value: 'empathique', label: 'Passer du temps avec ta famille ou tes amis' },
         { value: 'rebelle', label: 'Faire la fête ou une activité surprenante' },
         { value: 'imagineur', label: 'Créer, dessiner, écrire des histoires' },
-        { value: 'reveur', label: 'Rester tranquille et rêver' }
+        { value: 'reveur', label: 'Rester tranquille et rêver' },
+        { value: 'perseverant', label: 'Terminer un projet ou une activité commencée' }
       ]
     }
   ] : [
@@ -432,7 +436,8 @@ function getPcmContent(age) {
         { value: 'empathique', label: 'Je cherche avec qui travailler' },
         { value: 'rebelle', label: 'J\'essaie de trouver un angle original' },
         { value: 'imagineur', label: 'Je laisse mon imagination explorer le sujet' },
-        { value: 'reveur', label: 'Je prends du recul pour y réfléchir' }
+        { value: 'reveur', label: 'Je prends du recul pour y réfléchir' },
+        { value: 'perseverant', label: 'Je m\'organise pour bien faire, sans rien bâcler' }
       ]
     },
     {
@@ -444,7 +449,8 @@ function getPcmContent(age) {
         { value: 'empathique', label: 'L\'ambiance et les relations avec les profs/camarades' },
         { value: 'rebelle', label: 'Les matières créatives et les projets libres' },
         { value: 'imagineur', label: 'Quand je peux exprimer ma créativité' },
-        { value: 'reveur', label: 'Quand je peux travailler à mon rythme' }
+        { value: 'reveur', label: 'Quand je peux travailler à mon rythme' },
+        { value: 'perseverant', label: 'Quand je vois que mes efforts portent leurs fruits' }
       ]
     },
     {
@@ -456,7 +462,8 @@ function getPcmContent(age) {
         { value: 'empathique', label: 'J\'en parle à mes proches pour me rassurer' },
         { value: 'rebelle', label: 'Je décompresse avec une activité fun' },
         { value: 'imagineur', label: 'Je m\'isole pour me concentrer à ma façon' },
-        { value: 'reveur', label: 'Je prends du temps calme pour me recentrer' }
+        { value: 'reveur', label: 'Je prends du temps calme pour me recentrer' },
+        { value: 'perseverant', label: 'Je révise encore plus, je ne lâche rien' }
       ]
     },
     {
@@ -468,7 +475,8 @@ function getPcmContent(age) {
         { value: 'empathique', label: 'Des cours avec de l\'échange et du partage' },
         { value: 'rebelle', label: 'Des cours ludiques et interactifs' },
         { value: 'imagineur', label: 'Des cours qui laissent place à la création' },
-        { value: 'reveur', label: 'Des cours calmes où on peut réfléchir' }
+        { value: 'reveur', label: 'Des cours calmes où on peut réfléchir' },
+        { value: 'perseverant', label: 'Des cours exigeants qui poussent à se dépasser' }
       ]
     },
     {
@@ -480,7 +488,8 @@ function getPcmContent(age) {
         { value: 'empathique', label: 'Je les respecte par respect pour les autres' },
         { value: 'rebelle', label: 'Je les questionne et les adapte à ma sauce' },
         { value: 'imagineur', label: 'Je les interprète de façon créative' },
-        { value: 'reveur', label: 'Je les oublie parfois, absorbé par mes pensées' }
+        { value: 'reveur', label: 'Je les oublie parfois, absorbé par mes pensées' },
+        { value: 'perseverant', label: 'Je les respecte car elles donnent un cadre important' }
       ]
     },
     {
@@ -492,7 +501,8 @@ function getPcmContent(age) {
         { value: 'empathique', label: 'La bienveillance et l\'harmonie' },
         { value: 'rebelle', label: 'La liberté et l\'originalité' },
         { value: 'imagineur', label: 'L\'imagination et l\'expression' },
-        { value: 'reveur', label: 'Le calme et l\'introspection' }
+        { value: 'reveur', label: 'Le calme et l\'introspection' },
+        { value: 'perseverant', label: 'L\'engagement et la persévérance' }
       ]
     }
   ];

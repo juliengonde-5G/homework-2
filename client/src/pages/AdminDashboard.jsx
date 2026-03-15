@@ -69,7 +69,7 @@ export default function AdminDashboard() {
 
       {/* Tabs */}
       <div className="bg-white border-b px-4">
-        <div className="max-w-6xl mx-auto flex gap-1">
+        <div className="max-w-6xl mx-auto flex gap-1" role="tablist">
           {[
             { id: 'overview', label: 'Vue d\'ensemble' },
             { id: 'profiles', label: 'Profils' },
@@ -77,6 +77,8 @@ export default function AdminDashboard() {
           ].map(tab => (
             <button
               key={tab.id}
+              role="tab"
+              aria-selected={activeTab === tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`px-4 py-3 text-sm font-medium border-b-2 transition-all ${
                 activeTab === tab.id
