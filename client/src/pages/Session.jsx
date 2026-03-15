@@ -20,6 +20,7 @@ export default function Session() {
   const [chatInput, setChatInput] = useState('');
   const [sendingChat, setSendingChat] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [error, setError] = useState(null);
 
   // Exercise state
   const [answers, setAnswers] = useState({});
@@ -31,6 +32,15 @@ export default function Session() {
   }, [userId]);
 
   useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      e.preventDefault();
+      e.returnValue = 'Tu as une session en cours. Es-tu sûr de vouloir quitter ?';
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
+
+  useEffect(() => {
     const handleEscape = (e) => {
       if (e.key === 'Escape' && showChat) setShowChat(false);
     };
@@ -40,6 +50,7 @@ export default function Session() {
 
   const loadProgram = async () => {
     try {
+      setError(null);
       const res = await programAPI.getToday(userId);
       setProgram(res.data);
       const blocks = Array.isArray(res.data.blocks) ? res.data.blocks : [];
@@ -48,6 +59,7 @@ export default function Session() {
       timer.start();
     } catch (err) {
       console.error(err);
+      setError('Impossible de charger les données. Vérifie ta connexion.');
     } finally {
       setLoading(false);
     }
@@ -79,6 +91,7 @@ export default function Session() {
       }
     } catch (err) {
       console.error(err);
+      setError('Impossible de charger les données. Vérifie ta connexion.');
     } finally {
       setGenerating(false);
     }
@@ -163,7 +176,7 @@ export default function Session() {
       {/* Sticky header with timer */}
       <div className="bg-white/90 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-20 px-4 py-2">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
-          <button onClick={() => navigate(`/home/${userId}`)} className="text-gray-400 hover:text-gray-600 text-sm">
+          <button onClick={() => { if (window.confirm('Tu as une session en cours. Es-tu sûr de vouloir quitter ?')) navigate(`/home/${userId}`); }} className="text-gray-400 hover:text-gray-600 text-sm">
             ← Accueil
           </button>
 

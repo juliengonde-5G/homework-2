@@ -676,4 +676,60 @@ function getExploratoryInterestsContent(age) {
   };
 }
 
+// POST /api/discovery/reset/:userId - Reset discovery to allow re-profiling (parent only)
+router.post('/reset/:userId', async (req, res) => {
+  try {
+    const userId = parseInt(req.params.userId);
+
+    // Verify parent role
+    if (req.user.role !== 'parent' && req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Seul un parent peut réinitialiser le profil' });
+    }
+
+    const user = await prisma.user.findFirst({
+      where: { id: userId, familyId: req.familyId },
+      include: { profile: true }
+    });
+    if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé' });
+
+    // Save current profile to history before reset
+    if (user.profile) {
+      await prisma.profileHistory.create({
+        data: {
+          profileId: user.profile.id,
+          changedBy: req.user.userId,
+          changes: {
+            profileType: user.profile.profileType,
+            learningModalities: user.profile.learningModalities,
+            interests: user.profile.interests
+          },
+          reason: req.body.reason || 'Réinitialisation du profil par le parent'
+        }
+      });
+
+      // Reset profile discovery status
+      await prisma.profile.update({
+        where: { userId },
+        data: { discoveryCompleted: false }
+      });
+    }
+
+    // Delete discovery sessions to allow redo
+    await prisma.discoverySession.deleteMany({
+      where: { userId }
+    });
+
+    res.json({
+      message: 'Profil réinitialisé. L\'enfant pourra refaire le questionnaire de découverte.',
+      previousProfile: user.profile ? {
+        profileType: user.profile.profileType,
+        learningModalities: user.profile.learningModalities
+      } : null
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erreur lors de la réinitialisation' });
+  }
+});
+
 module.exports = router;

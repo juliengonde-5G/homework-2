@@ -117,6 +117,9 @@ export default function Profile() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="card">
           <h3 className="font-display font-semibold mb-2">Personnalité d'apprentissage</h3>
           <p className="text-gray-600 text-sm">{pcm.desc}</p>
+          <p className="text-xs text-gray-400 mt-2 italic">
+            Ce profil est indicatif et pédagogique. Il ne constitue pas un diagnostic psychologique et peut évoluer dans le temps.
+          </p>
         </motion.div>
 
         {/* Learning modalities */}
