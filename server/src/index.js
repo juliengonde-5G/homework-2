@@ -33,6 +33,7 @@ const homeRoutes = require('./routes/home');
 const legalRoutes = require('./routes/legal');
 const subscriptionRoutes = require('./routes/subscription');
 const teacherRoutes = require('./routes/teacher');
+const metacognitiveRoutes = require('./routes/metacognitive');
 
 const { authMiddleware } = require('./middleware/auth');
 
@@ -93,6 +94,7 @@ app.use('/api/tts', authMiddleware, ttsRoutes);
 app.use('/api/admin', authMiddleware, adminRoutes);
 app.use('/api/home', authMiddleware, homeRoutes);
 app.use('/api/subscription', authMiddleware, subscriptionRoutes);
+app.use('/api/metacognitive', authMiddleware, metacognitiveRoutes);
 
 // Serve frontend in production
 if (process.env.NODE_ENV === 'production') {
