@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <!-- Glow effect -->
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#EEF2FF" />
+      <stop offset="100%" stop-color="transparent" />
+    </radialGradient>
+    <linearGradient id="bulb-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#818CF8" />
+      <stop offset="100%" stop-color="#6366F1" />
+    </linearGradient>
+    <linearGradient id="rays" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#FCD34D" />
+      <stop offset="100%" stop-color="#F59E0B" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background glow -->
+  <circle cx="60" cy="50" r="45" fill="url(#glow)" />
+
+  <!-- Light rays -->
+  <g stroke="url(#rays)" stroke-width="2.5" stroke-linecap="round" opacity="0.8">
+    <line x1="60" y1="8" x2="60" y2="18" />
+    <line x1="28" y1="22" x2="35" y2="29" />
+    <line x1="92" y1="22" x2="85" y2="29" />
+    <line x1="18" y1="50" x2="28" y2="50" />
+    <line x1="102" y1="50" x2="92" y2="50" />
+  </g>
+
+  <!-- Lightbulb body -->
+  <path d="M45 55C45 38 52 28 60 28C68 28 75 38 75 55C75 62 70 67 68 70H52C50 67 45 62 45 55Z"
+        fill="url(#bulb-gradient)" />
+
+  <!-- Book pages inside bulb (knowledge) -->
+  <g opacity="0.9">
+    <path d="M52 45C52 45 56 43 60 43C64 43 68 45 68 45" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M52 50C52 50 56 48 60 48C64 48 68 50 68 50" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M52 55C52 55 56 53 60 53C64 53 68 55 68 55" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <line x1="60" y1="42" x2="60" y2="58" stroke="white" stroke-width="1.5" opacity="0.6"/>
+  </g>
+
+  <!-- Bulb base/screw -->
+  <rect x="50" y="70" width="20" height="4" rx="1" fill="#A5B4FC" />
+  <rect x="52" y="74" width="16" height="3" rx="1" fill="#818CF8" />
+  <rect x="54" y="77" width="12" height="3" rx="1.5" fill="#6366F1" />
+
+  <!-- Brand name -->
+  <text x="60" y="100" text-anchor="middle" font-family="'Fredoka', sans-serif" font-weight="600" font-size="22" fill="#4F46E5">
+    Lumos
+  </text>
+</svg>

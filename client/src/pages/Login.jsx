@@ -30,7 +30,7 @@ export default function Login() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="mascot text-5xl w-24 h-24 mx-auto mb-4">🦉</div>
-          <h1 className="font-display text-3xl font-bold text-primary-800">Homework</h1>
+          <h1 className="font-display text-3xl font-bold text-primary-800">Lumos</h1>
           <p className="text-gray-500 mt-2">Ton compagnon d'apprentissage</p>
         </div>
 

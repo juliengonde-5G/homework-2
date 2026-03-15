@@ -597,15 +597,15 @@ function getPathwayChoiceContent(age) {
     pathways: [
       {
         id: 'back_to_basics',
-        label: 'Back to Basics',
-        description: 'Français, Maths, Anglais - pour consolider les bases',
+        label: 'Socle Fondamental',
+        description: 'Maîtrise des enseignements fondamentaux : Français, Mathématiques, Anglais',
         icon: '📐',
         color: '#4F46E5'
       },
       {
         id: 'oriented',
-        label: 'Objectif Moyenne',
-        description: 'Les bases + renforcement dans les matières où tu veux progresser',
+        label: 'Parcours Renforcé',
+        description: 'Socle fondamental complété par un renforcement ciblé dans les disciplines à consolider',
         icon: '📈',
         color: '#059669',
         requiresInput: true,
@@ -616,7 +616,7 @@ function getPathwayChoiceContent(age) {
       {
         id: 'project',
         label: 'Parcours Projet',
-        description: 'Les bases + un projet lié à ta passion',
+        description: 'Socle fondamental enrichi par un projet interdisciplinaire lié à tes centres d\'intérêt',
         icon: '🚀',
         color: '#DC2626',
         requiresInput: true,

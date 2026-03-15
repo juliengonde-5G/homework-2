@@ -14,7 +14,8 @@ model Family {
   name      String
   createdAt DateTime @default(now()) @map("created_at")
 
-  users User[]
+  users        User[]
+  subscription Subscription?
 
   @@map("families")
 }
@@ -54,8 +55,9 @@ model User {
   userProgress      UserProgress[]
   skillAssessments  SkillAssessment[]
   dailyMoods        DailyMood[]
-  userConsents      UserConsent[]
-  auditLogs         AuditLog[]
+  userConsents              UserConsent[]
+  auditLogs                 AuditLog[]
+  metacognitiveAssessments  MetacognitiveAssessment[]
 
   @@index([familyId])
   @@map("users")
@@ -398,4 +400,84 @@ model AuditLog {
 
   @@index([userId, action])
   @@map("audit_logs")
+}
+
+// ─── Abonnements ────────────────────────────────────────────────────
+
+enum SubscriptionPlan {
+  free_trial
+  family_monthly
+  family_yearly
+}
+
+enum SubscriptionStatus {
+  trial
+  active
+  cancelled
+  expired
+}
+
+model Subscription {
+  id          Int                @id @default(autoincrement())
+  familyId    Int                @unique @map("family_id")
+  plan        SubscriptionPlan   @default(free_trial)
+  status      SubscriptionStatus @default(trial)
+  trialEndsAt DateTime?          @map("trial_ends_at")
+  startedAt   DateTime           @default(now()) @map("started_at")
+  expiresAt   DateTime?          @map("expires_at")
+  promoCode   String?            @map("promo_code")
+  createdAt   DateTime           @default(now()) @map("created_at")
+  updatedAt   DateTime           @updatedAt @map("updated_at")
+
+  family Family @relation(fields: [familyId], references: [id])
+
+  @@map("subscriptions")
+}
+
+// ─── B2B : Parrainage enseignant ────────────────────────────────────
+
+model Teacher {
+  id             Int      @id @default(autoincrement())
+  name           String
+  email          String   @unique
+  school         String?
+  academie       String?  // Académie de rattachement
+  promoCode      String   @unique @map("promo_code")
+  commissionRate Float    @default(0.10) @map("commission_rate") // 10% default
+  totalReferrals Int      @default(0) @map("total_referrals")
+  totalEarnings  Float    @default(0) @map("total_earnings")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  referrals TeacherReferral[]
+
+  @@map("teachers")
+}
+
+model TeacherReferral {
+  id         Int      @id @default(autoincrement())
+  teacherId  Int      @map("teacher_id")
+  familyId   Int      @map("family_id")
+  usedAt     DateTime @default(now()) @map("used_at")
+
+  teacher Teacher @relation(fields: [teacherId], references: [id])
+
+  @@map("teacher_referrals")
+}
+
+// ─── Auto-évaluation métacognitive ──────────────────────────────────
+
+model MetacognitiveAssessment {
+  id               Int      @id @default(autoincrement())
+  userId           Int      @map("user_id")
+  sessionLogId     Int?     @map("session_log_id")
+  subject          String
+  competencyLabel  String   @map("competency_label")
+  selfRating       Int      @map("self_rating") // 1-4: pas compris, un peu, bien, très bien
+  confidence       Float?   // 0-1 confidence in own assessment
+  comment          String?  // Optional free text
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("metacognitive_assessments")
 }

@@ -7,11 +7,11 @@ const router = express.Router();
 // GET /api/legal/privacy - Privacy policy (public)
 router.get('/privacy', (req, res) => {
   res.json({
-    title: 'Politique de confidentialité - Homework',
+    title: 'Politique de confidentialité - Lumos',
     version: '1.0',
     lastUpdated: '2026-03-15',
     content: {
-      introduction: 'Homework collecte et traite des données personnelles dans le respect du RGPD (Règlement Général sur la Protection des Données).',
+      introduction: 'Lumos collecte et traite des données personnelles dans le respect du RGPD (Règlement Général sur la Protection des Données).',
       dataCollected: [
         'Données d\'identification : nom, email, date de naissance',
         'Données d\'apprentissage : profil pédagogique, progression, scores',
@@ -205,6 +205,38 @@ router.get('/export/:userId', authMiddleware, async (req, res) => {
     console.error(err);
     res.status(500).json({ error: 'Erreur lors de l\'export des données' });
   }
+});
+
+// GET /api/legal/about - Landing page trust content
+router.get('/about', (req, res) => {
+  res.json({
+    brand: 'Lumos',
+    tagline: 'Éclaire ton parcours d\'apprentissage',
+    description: 'Lumos est une application d\'aide aux devoirs personnalisée qui s\'adapte à la personnalité et aux centres d\'intérêt de chaque enfant.',
+    features: [
+      { icon: '🧠', title: 'Profilage PCM', desc: 'Un parcours adapté à la personnalité d\'apprentissage de votre enfant' },
+      { icon: '🎯', title: 'IA pédagogique', desc: 'Des leçons et exercices générés sur mesure par intelligence artificielle' },
+      { icon: '📊', title: 'Suivi parent', desc: 'Tableau de bord complet pour suivre la progression et les difficultés' },
+      { icon: '🏆', title: 'Gamification', desc: 'Badges, niveaux et streaks pour garder la motivation' },
+      { icon: '🔒', title: 'RGPD conforme', desc: 'Données protégées, hébergement en France, conforme au RGPD' },
+      { icon: '👨‍🏫', title: 'Recommandé par des enseignants', desc: 'Partenariat avec l\'Éducation Nationale et les enseignants prescripteurs' }
+    ],
+    pricing: {
+      trial: { duration: '14 jours', price: 'Gratuit', features: ['Accès complet', 'Tous les parcours', 'Chat pédagogique'] },
+      monthly: { price: '9,90€/mois', features: ['Accès complet', 'Tous les enfants de la famille', 'Support prioritaire'] },
+      yearly: { price: '89€/an', savings: '2 mois offerts', features: ['Accès complet', 'Tous les enfants de la famille', 'Support prioritaire', 'Accès anticipé aux nouveautés'] }
+    },
+    testimonials: [
+      { name: 'Sophie M.', role: 'Maman de 2 enfants', text: 'Lumos a transformé les devoirs du soir. Mes enfants sont motivés et autonomes !' },
+      { name: 'Pierre D.', role: 'Enseignant CM2', text: 'Je recommande Lumos à mes élèves. L\'adaptation au profil de chaque enfant fait vraiment la différence.' },
+      { name: 'Marie L.', role: 'Maman d\'Ilan, 14 ans', text: 'Mon fils passionné de géopolitique a enfin trouvé un outil qui parle son langage.' }
+    ],
+    certifications: [
+      'Conforme RGPD (données hébergées en France)',
+      'Contenu aligné sur le Socle Commun de l\'Éducation Nationale',
+      'IA responsable : pas de réponses directes, guidage pédagogique uniquement'
+    ]
+  });
 });
 
 module.exports = router;

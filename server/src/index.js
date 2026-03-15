@@ -31,6 +31,8 @@ const ttsRoutes = require('./routes/tts');
 const adminRoutes = require('./routes/admin');
 const homeRoutes = require('./routes/home');
 const legalRoutes = require('./routes/legal');
+const subscriptionRoutes = require('./routes/subscription');
+const teacherRoutes = require('./routes/teacher');
 
 const { authMiddleware } = require('./middleware/auth');
 
@@ -78,6 +80,7 @@ app.use('/api/auth/child/select', loginLimiter);
 app.use('/api/auth/parent/register', registerLimiter);
 app.use('/api/auth', authRoutes);
 app.use('/api/legal', legalRoutes);
+app.use('/api/teachers', teacherRoutes);
 
 // ─── Protected routes ───────────────────────────────────────────────
 app.use('/api/family', authMiddleware, familyRoutes);
@@ -89,6 +92,7 @@ app.use('/api/chat', authMiddleware, chatRoutes);
 app.use('/api/tts', authMiddleware, ttsRoutes);
 app.use('/api/admin', authMiddleware, adminRoutes);
 app.use('/api/home', authMiddleware, homeRoutes);
+app.use('/api/subscription', authMiddleware, subscriptionRoutes);
 
 // Serve frontend in production
 if (process.env.NODE_ENV === 'production') {
@@ -107,7 +111,7 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Homework API running on port ${PORT}`);
+  console.log(`Lumos API running on port ${PORT}`);
 });
 
 module.exports = app;

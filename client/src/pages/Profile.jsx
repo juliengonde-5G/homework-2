@@ -63,8 +63,8 @@ export default function Profile() {
   const tips = profile?.adviceTips || {};
 
   const pathwayLabels = {
-    back_to_basics: { label: 'Back to Basics', icon: '📐' },
-    oriented: { label: 'Objectif Moyenne', icon: '📈' },
+    back_to_basics: { label: 'Socle Fondamental', icon: '📐' },
+    oriented: { label: 'Parcours Renforcé', icon: '📈' },
     project: { label: 'Parcours Projet', icon: '🚀' },
   };
 
