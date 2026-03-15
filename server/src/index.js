@@ -41,7 +41,11 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // ─── Security middleware ────────────────────────────────────────────
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: false,
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  crossOriginEmbedderPolicy: false,
+}));
 
 // ─── Global rate limiting: 100 requests per minute ──────────────────
 const globalLimiter = rateLimit({
